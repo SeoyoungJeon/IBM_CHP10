@@ -57,20 +57,17 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
 
 @app.callback(Output(component_id='sucess-pie-chart', component_property='figure'),
             Input(component_id='site-dropdown', component_property='value'))
-            
+
 def get_pie_chart(entered_site):
-    succes_df = spacex_df[spacex_df['class']==1]
+    succes_df = spacex_df[spacex_df['class'] == 1]
     succes_df_v2 = succes_df.groupby("Launch Site")["class"].sum().reset_index().rename(columns = {'class':'success'})
   
     if entered_site == 'ALL':
-        fig = px.pie(succes_df_v2, values='success', 
-        names='Launch site', 
-        title='Total success lanches by site')
+        fig = px.pie(succes_df_v2, values='success', names='Launch Site', title='Total success lanches by site')
         return fig
     else:
-        site_pie_df = spacex_df.groupby("Launch Site")["class"].value_counts().reset_index(name = 'count')
-        fig = px.pie(site_df[site_pie_df["Launch Site"]==entered_site], values = 'count',
-        names = entered_site)
+        site_pie_df = spacex_df.groupby(["Launch Site"])["class"].value_counts().reset_index(name = 'count')
+        fig = px.pie(site_pie_df[site_pie_df["Launch Site"] == entered_site], values = 'count', names = 'class')
         fig.update_layout(title = "Percentage of success at " + entered_site)
         return fig
 
@@ -78,16 +75,17 @@ def get_pie_chart(entered_site):
              [Input(component_id = 'site-dropdown', component_property = 'value'),
              Input(component_id = 'payload-slider', component_property = 'value')])
 
-def update_chart_scatter(entered_site, payload_val):
+def get_chart_scatter(entered_site, payload_val):
   payload_low, payload_high = payload_val
   if entered_site == 'ALL':
-    fig = px.scatter(spacex_df, x = "Payload mass (kg)", y = 'class', color = "Booster Version Category")
+    fig = px.scatter(spacex_df, x = "Payload Mass (kg)", y = 'class', color = "Booster Version Category")
     fig.update_layout(title = "Payload Mass and the Outcome from all launche sites")
     return fig
+
   else:
     site_df = spacex_df[spacex_df["Launch Site"] == entered_site]
     site_df2 = site_df[(site_df["Payload Mass (kg)"] > payload_low) & (site_df["Payload Mass (kg)"] < payload_high)]
-    fig = px.scatter(site_df2, x = "Payload mass (kg)", y = 'class', color = "Booster Version Category")
+    fig = px.scatter(site_df2, x = "Payload Mass (kg)", y = 'class', color = "Booster Version Category")
     fig.update_layout(title = "Success possibility when launch site is " + entered_site + " and " + "payload Mass from " + str(payload_low) + "kg" + " to " + str(payload_high) + "kg")
     return fig
     
