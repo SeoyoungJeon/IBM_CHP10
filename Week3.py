@@ -11,7 +11,7 @@ spacex_df = pd.read_csv("spacex_launch_dash.csv")
 max_payload = spacex_df['Payload Mass (kg)'].max()
 min_payload = spacex_df['Payload Mass (kg)'].min()
 
-launch_site = sorted(spacex_df["Launch Site"])
+#launch_site = sorted(spacex_df["Launch Site"])
 
 # Create a dash application
 app = dash.Dash(__name__)
@@ -35,13 +35,13 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
                                     value='ALL',
                                     placeholder="Select Launch Site")]),
 
-                                    html.Br(),
+                                html.Br(),
 
                                     # TASK 2:
-                                    html.Div(dcc.Graph(id = "sucess-pie-chart")),
-                                    html.Br(),
+                                html.Div(dcc.Graph(id = "sucess-pie-chart")),
+                                html.Br(),
 
-                                    html.P("Payload range (kg): "),
+                                html.P("Payload range (kg): "),
 
                                 # TASK 3: Add a slider to select payload range
                                 #dcc.RangeSlider(id='payload-slider',...)
@@ -50,12 +50,12 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
                                     marks = {0:'0', 2000:'2000', 4000:'4000', 6000: '6000', 8000:'8000', 10000:'10000'},
                                     value = [min_payload, max_payload]),
 
-                                    html.Div(dcc.Graph(id = 'success-payload-scatter-chart')), ])
+                                html.Div(dcc.Graph(id = 'success-payload-scatter-chart')), ])
 
                                 # Add a callback function for `site-dropdown` as input, `success-pie-chart` as output
                                 # Function decorator to specify function input and output
 
-@app.callback(Output(component_id='success-pie-chart', component_property='figure'),
+@app.callback(Output(component_id='sucess-pie-chart', component_property='figure'),
             Input(component_id='site-dropdown', component_property='value'))
             
 def get_pie_chart(entered_site):
@@ -68,13 +68,13 @@ def get_pie_chart(entered_site):
         title='Total success lanches by site')
         return fig
     else:
-        site_df = spacex_df.groupby("Launch Site")["class"].value_counts().reset_index(name = 'count')
-        fig = px.pie(site_df[site_df["Launch Site"]==entered_site], values = 'count',
+        site_pie_df = spacex_df.groupby("Launch Site")["class"].value_counts().reset_index(name = 'count')
+        fig = px.pie(site_df[site_pie_df["Launch Site"]==entered_site], values = 'count',
         names = entered_site)
         fig.update_layout(title = "Percentage of success at " + entered_site)
         return fig
 
-@app.callback(Output(component_id = 'sucess-payload-scatter-chart', component_property = 'figure'),
+@app.callback(Output(component_id = 'success-payload-scatter-chart', component_property = 'figure'),
              [Input(component_id = 'site-dropdown', component_property = 'value'),
              Input(component_id = 'payload-slider', component_property = 'value')])
 
@@ -83,11 +83,11 @@ def update_chart_scatter(entered_site, payload_val):
   if entered_site == 'ALL':
     fig = px.scatter(spacex_df, x = "Payload mass (kg)", y = 'class', color = "Booster Version Category")
     fig.update_layout(title = "Payload Mass and the Outcome from all launche sites")
-    return fige
+    return fig
   else:
     site_df = spacex_df[spacex_df["Launch Site"] == entered_site]
-    site_df = site_df[(site_df["Payload Mass (kg)"] > payload_low) & (site_df["Payload Mass (kg)"] < payload_high)]
-    fig = px.scatter(site_df, x = "Payload mass (kg)", y = 'class', color = "Booster Version Category")
+    site_df2 = site_df[(site_df["Payload Mass (kg)"] > payload_low) & (site_df["Payload Mass (kg)"] < payload_high)]
+    fig = px.scatter(site_df2, x = "Payload mass (kg)", y = 'class', color = "Booster Version Category")
     fig.update_layout(title = "Success possibility when launch site is " + entered_site + " and " + "payload Mass from " + str(payload_low) + "kg" + " to " + str(payload_high) + "kg")
     return fig
     
