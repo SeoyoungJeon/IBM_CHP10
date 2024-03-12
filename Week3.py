@@ -70,7 +70,16 @@ def get_pie_chart(entered_site):
         site_df = spacex_df[spacex_df["Launch Site"] == entered_site]
         site_df_group = site_df.groupby()
         fig = px.pie(filtered_df[filtered_df["Launch Site"]==entered_site])
-        
+        names = entered site
+        title = 'Success launches by site'
+        return fig
+
+@app.callback(Output(component_id = 'sucess-payload-scatter-chart', component_property = 'figure'),
+             [Input(component_id = 'site-dropdown', component_property = 'value'),
+             Input(component_id = 'payload-slider', component_property = 'value')])
+
+def update_chart_scatter(sites_sel, payload_val):
+          
 
 
 
