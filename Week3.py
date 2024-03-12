@@ -59,19 +59,19 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
             Input(component_id='site-dropdown', component_property='value'))
             
 def get_pie_chart(entered_site):
-    #filtered_df = spacex_df.groupby("Launch Site").mean()
+    succes_df = spacex_df[spacex_df['class']==1]
+    succes_df_v2 = succes_df.groupby("Launch Site")["class"].sum().reset_index().rename(columns = {'class':'success'})
+  
     if entered_site == 'ALL':
-        df_all = spacex_df[spacex_df["class" == 1]]
-        fig = px.pie(df_all, values='success', 
+        fig = px.pie(succes_df_v2, values='success', 
         names='Launch site', 
         title='Total success lanches by site')
         return fig
     else:
-        site_df = spacex_df[spacex_df["Launch Site"] == entered_site]
-        site_df_group = site_df.groupby()
-        fig = px.pie(filtered_df[filtered_df["Launch Site"]==entered_site])
-        names = entered_site
-        title = 'Success launches by site'
+        site_df = spacex_df.groupby("Launch Site")["class"].value_counts().reset_index(name = 'count')
+        fig = px.pie(site_df[site_df["Launch Site"]==entered_site], values = 'count',
+        names = entered_site)
+        fig.update_layout(title = "Percentage of success at " + entered_site)
         return fig
 
 @app.callback(Output(component_id = 'sucess-payload-scatter-chart', component_property = 'figure'),
