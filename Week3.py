@@ -79,6 +79,14 @@ def get_pie_chart(entered_site):
              Input(component_id = 'payload-slider', component_property = 'value')])
 
 def update_chart_scatter(sites_sel, payload_val):
+  payload_low, payload_high = payload_val
+  if sites_sel == 'ALL':
+    fig = px.scatter(spacex_df, x = "Payload mass (kg)", y = 'class', color = "Booster Version Category")
+    fig.update_layout(title = "Payload Mass and the Outcome from all launche sites")
+    return fige
+  else:
+    site_df = spacex_df[spacex_df["Launch Site"] == sites_sel]
+    site_df = site_df[(site_df["Payload "]
           
 
 
